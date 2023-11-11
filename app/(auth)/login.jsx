@@ -209,30 +209,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000', // Set the background color for the safe area
   },
-container: {
+  container: {
     flex: 1,
     backgroundColor: '#000', // Dark background
     alignItems: 'stretch', // Stretch child components
     justifyContent: 'flex-start', // Align to top
     paddingTop: 20, // Add padding at the top
-},
-imagePicker: {
-  backgroundColor: '#333',
-  borderRadius: 20,
-  width: 300,
-  height: 300,
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginBottom: 20,
-  overflow: 'hidden',
-},
-image: {
-  width: '100%',
-  height: '100%',
-},
-imagePickerText: {
-  color: '#fff',
-  textAlign: 'center',
-}
+  },
+  imagePicker: {
+    backgroundColor: '#333',
+    borderRadius: 20,
+    width: 300,
+    height: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  imagePickerText: {
+    color: '#fff',
+    textAlign: 'center',
+  }
   // ... other styles you might need ...
 });
