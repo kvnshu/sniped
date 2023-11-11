@@ -26,18 +26,98 @@ export default function Login() {
   const isPhoneButtonDisabled = phone.trim().length >= 10;
   const isVerificationEnabled = token.trim().length == 6;
   
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-    });
+  const renderOnboardingScreen = () => {
+    switch (onboardingStep) {
+      case 0: // Phone Number
+        return (
+          <View style={{ flex: 1, paddingTop: insets.top }}>
+            <PhoneNumberInput
+                title="☎️ Phone Number, por favor!"
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="+12345678901"
+            />
 
-    if (!result.canceled) {
-        setProfileImage(result.uri);
+            <View style={{ padding: 20, paddingBottom: insets.bottom }}>
+              <PrimaryButton title="Log in" disabled={loading ||!isPhoneButtonDisabled} onPress={authWithPhone} />
+            </View>
+          </View>
+        );
+
+      case 1: // OTP
+        return (
+          <View style={{ flex: 1, paddingTop: insets.top }}>
+            <CustomNumberInput
+                title="OTP"
+                value={token}
+                onChangeText={setToken}
+                placeholder="Enter your OTP"
+            />
+             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
+                <PrimaryButton title="Verify" disabled={loading || !isVerificationEnabled} onPress={verifyOtp} />
+              </View>
+          </View>
+        );
+
+      case 2: // Full Name
+        return(
+          <View style={{ flex: 1, paddingTop: insets.top }}>
+            <CustomTextInput 
+                title="👋 What's your full name?"
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="Seth Rogan..."
+            />
+            <View style={{ padding: 20, paddingBottom: insets.bottom }}>
+                <PrimaryButton 
+                    onPress={() => handlePress()} 
+                    disabled={isNameButtonDisabled} // Button is disabled if firstName
+                />
+            </View>
+        </View>
+        );
+
+      case 3: // Image
+        return(
+          <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom,backgroundColor: '#000'}}>
+            <Text style={styles.title}>💅 Select your profile pic!</Text>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+                    {profileImage ? (
+                        <Image source={{ assets: profileImage }} style={styles.image} />
+                    ) : (
+                        <Text style={styles.imagePickerText}>Tap here to select image</Text>
+                    )}
+                </TouchableOpacity>
+            </View>
+            <View style={styles.buttonContainer}>
+                <PrimaryButton 
+                    onPress={handleProfileInput()} 
+                    disabled={!profileImage} // Button is disabled if no profile image is selected
+                />
+            </View>
+        </View>
+        );
+
+      case 4:
+        return(
+          <Text>Completed onboarding, return to Feed!!</Text>
+        );
+
+      default:
+        return (
+          <Text>Something went wrong. Beep boop buup.</Text>
+        );
     }
-};
+  };
+
+  const advanceToNextStep = () => {
+    setOnboardingStep(prevStep => prevStep + 1);
+  };
+
+  const goToPreviousStep = () => {
+    setOnboardingStep(prevStep => prevStep - 1);
+  };
 
   async function authWithPhone() {
     setLoading(true);
@@ -53,15 +133,6 @@ export default function Login() {
     
   }
 
-  const advanceToNextStep = () => {
-    setOnboardingStep(prevStep => prevStep + 1);
-  };
-
-  // Function to go back to the previous step
-  const goToPreviousStep = () => {
-    setOnboardingStep(prevStep => prevStep - 1);
-  };
-
   async function verifyOtp() {
     setLoading(true);
     const { data: { session }, error } = await supabase.auth.verifyOtp({
@@ -74,6 +145,7 @@ export default function Login() {
       return
     } 
 
+    // TODO: FIX THIS LOGIC
     // insert value into 
     const { data: users, selectError } = await supabase
       .from('users')
@@ -94,95 +166,30 @@ export default function Login() {
     advanceToNextStep();
   }
 
-  async function submitProfilePicture() {
+  async function handleNameInput(){
+    
+  }
+
+  async function pickImage() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+    });
+
+    if (!result.canceled) {
+        setProfileImage(result.uri);
+    }
+  };
+
+
+  async function handleProfileInput() {
     advanceToNextStep();
   };
 
   // Function to render current onboarding screen based on step
-  const renderOnboardingScreen = () => {
-    switch (onboardingStep) {
-      case 0:
-        return (
-          <View style={{ flex: 1, paddingTop: insets.top }}>
-            <PhoneNumberInput
-                title="☎️ Phone Number, por favor!"
-                value={phone}
-                onChangeText={setPhone}
-                placeholder="+12345678901"
-            />
 
-            <View style={{ padding: 20, paddingBottom: insets.bottom }}>
-              <PrimaryButton title="Log in" disabled={loading ||!isPhoneButtonDisabled} onPress={authWithPhone} />
-            </View>
-          </View>
-        );
-
-      case 1:
-        return (
-          <View style={{ flex: 1, paddingTop: insets.top }}>
-            <CustomNumberInput
-                title="OTP"
-                value={token}
-                onChangeText={setToken}
-                placeholder="Enter your OTP"
-            />
-             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
-                <PrimaryButton title="Verify" disabled={loading || !isVerificationEnabled} onPress={verifyOtp} />
-              </View>
-          </View>
-        );
-
-      case 2:
-        return(
-          <View style={{ flex: 1, paddingTop: insets.top }}>
-            <CustomTextInput 
-                title="👋 What's your full name?"
-                value={firstName}
-                onChangeText={setFirstName}
-                placeholder="Seth Rogan..."
-            />
-            <View style={{ padding: 20, paddingBottom: insets.bottom }}>
-                <PrimaryButton 
-                    onPress={() => handlePress()} 
-                    disabled={isNameButtonDisabled} // Button is disabled if firstName
-                />
-            </View>
-        </View>
-        );
-
-      case 3:
-        return(
-          <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom,backgroundColor: '#000'}}>
-            <Text style={styles.title}>💅 Select your profile pic!</Text>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-                    {profileImage ? (
-                        <Image source={{ assets: profileImage }} style={styles.image} />
-                    ) : (
-                        <Text style={styles.imagePickerText}>Tap here to select image</Text>
-                    )}
-                </TouchableOpacity>
-            </View>
-            <View style={styles.buttonContainer}>
-                <PrimaryButton 
-                    onPress={submitProfilePicture()} 
-                    disabled={!profileImage} // Button is disabled if no profile image is selected
-                />
-            </View>
-        </View>
-        );
-
-      case 4:
-        return(
-          <Text>Completed onboarding, return to Feed!!</Text>
-        );
-
-      default:
-        return (
-          <Text>Something went wrong. Beep boop buup.</Text>
-        );
-    }
-  };
 
   return (
     <KeyboardAvoidingView 
