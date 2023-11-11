@@ -30,8 +30,8 @@
     },
     "plugins": [
       "expo-router"
-    ],
-    "extra": {
+    ]
+    /*"extra": {
       "router": {
         "origin": false
       },
@@ -39,6 +39,6 @@
         "projectId": "4e30c71d-1730-4a46-8800-9bcbbdd1acf7"
       }
     },
-    "owner": "williamkcu"
+    "owner": "williamkcu" */
   }
 }
