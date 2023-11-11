@@ -23,6 +23,7 @@ const CustomNumberInput = ({ title, value, onChangeText, placeholder }) => {
                 placeholderTextColor="#ccc"
                 autoFocus={true} // Automatically focus this input
                 keyboardType="number-pad"
+                autoComplete='one-time-code'
             />
         </View>
     );

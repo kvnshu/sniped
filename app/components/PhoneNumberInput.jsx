@@ -23,6 +23,7 @@ const PhoneNumberInput = ({ title, value, onChangeText, placeholder }) => {
                 placeholderTextColor="#ccc"
                 autoFocus={true} // Automatically focus this input
                 keyboardType="phone-pad"
+                autoComplete='tel'
             />
         </View>
     );
