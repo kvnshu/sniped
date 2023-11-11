@@ -18,6 +18,7 @@ import Login from "./(auth)/login";
 
 const StartPage = () => {
   const [session, setSession] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -48,8 +49,8 @@ const StartPage = () => {
   return (
     <View style={styles.fullScreen}>
       <SafeAreaProvider>
-        {/*TODO fix logic to allow new users to input name*/} 
-        {session && session.user ? <Redirect href="/FeedView" /> : <Login />}
+        {/*TODO fix logic to allow new users to input name*/}
+        {session && user?.registered ? <Redirect href="/FeedView" /> : <Login />}
       </SafeAreaProvider>
     </View>
   );
