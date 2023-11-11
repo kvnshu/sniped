@@ -139,10 +139,14 @@ export default function Login() {
     });
 
     if (error) {
+      // e.g. timeout or invalid 
       Alert.alert(error.message);
-      setPhoneProvided(false);
+      setLoading(false);
+      goToPreviousStep();
+      setToken('')
       return
-    } 
+    }
+    setLoading(false);
 
     // TODO: FIX THIS LOGIC
     // insert value into 
