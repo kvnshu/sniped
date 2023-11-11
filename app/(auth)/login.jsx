@@ -24,21 +24,21 @@ export default function Login() {
   const isNameButtonDisabled = firstName.trim().length === 0;
   const isPhoneButtonDisabled = phone.trim().length >= 10;
   const isVerificationEnabled = token.trim().length == 6;
-  
+
   const renderOnboardingScreen = () => {
     switch (onboardingStep) {
       case 0: // Phone Number
         return (
           <View style={{ flex: 1, paddingTop: insets.top }}>
             <PhoneNumberInput
-                title="☎️ Phone Number, por favor!"
-                value={phone}
-                onChangeText={setPhone}
-                placeholder="+12345678901"
+              title="☎️ Phone Number, por favor!"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="+12345678901"
             />
 
             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
-              <PrimaryButton title="Log in" disabled={loading ||!isPhoneButtonDisabled} onPress={authWithPhone} />
+              <PrimaryButton title="Log in" disabled={loading || !isPhoneButtonDisabled} onPress={authWithPhone} />
             </View>
           </View>
         );
@@ -47,25 +47,25 @@ export default function Login() {
         return (
           <View style={{ flex: 1, paddingTop: insets.top }}>
             <CustomNumberInput
-                title="OTP"
-                value={token}
-                onChangeText={setToken}
-                placeholder="Enter your OTP"
+              title="OTP"
+              value={token}
+              onChangeText={setToken}
+              placeholder="Enter your OTP"
             />
-             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
-                <PrimaryButton title="Verify" disabled={loading || !isVerificationEnabled} onPress={verifyOtp} />
-              </View>
+            <View style={{ padding: 20, paddingBottom: insets.bottom }}>
+              <PrimaryButton title="Verify" disabled={loading || !isVerificationEnabled} onPress={verifyOtp} />
+            </View>
           </View>
         );
 
       case 2: // Full Name
-        return(
+        return (
           <View style={{ flex: 1, paddingTop: insets.top }}>
-            <CustomTextInput 
-                title="👋 What's your full name?"
-                value={firstName}
-                onChangeText={setFirstName}
-                placeholder="Seth Rogan..."
+            <CustomTextInput
+              title="👋 What's your full name?"
+              value={firstName}
+              onChangeText={setFirstName}
+              placeholder="Seth Rogan..."
             />
             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
                 <PrimaryButton 
@@ -77,17 +77,17 @@ export default function Login() {
         );
 
       case 3: // Image
-        return(
-          <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom,backgroundColor: '#000'}}>
+        return (
+          <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: '#000' }}>
             <Text style={styles.title}>💅 Select your profile pic!</Text>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-                    {profileImage ? (
-                        <Image source={{ assets: profileImage }} style={styles.image} />
-                    ) : (
-                        <Text style={styles.imagePickerText}>Tap here to select image</Text>
-                    )}
-                </TouchableOpacity>
+              <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+                {profileImage ? (
+                  <Image source={{ assets: profileImage }} style={styles.image} />
+                ) : (
+                  <Text style={styles.imagePickerText}>Tap here to select image</Text>
+                )}
+              </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
                 <PrimaryButton 
@@ -95,11 +95,11 @@ export default function Login() {
                     disabled={!profileImage} // Button is disabled if no profile image is selected
                 />
             </View>
-        </View>
+          </View>
         );
 
       case 4:
-        return(
+        return (
           <Text>Completed onboarding, return to Feed!!</Text>
         );
 
@@ -191,9 +191,6 @@ export default function Login() {
     advanceToNextStep();
   };
 
-  // Function to render current onboarding screen based on step
-
-
   return (
     <KeyboardAvoidingView 
         style={styles.container} 
@@ -204,35 +201,35 @@ export default function Login() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#000', // Set the background color for the safe area
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#000', // Dark background
-    alignItems: 'stretch', // Stretch child components
-    justifyContent: 'flex-start', // Align to top
-    paddingTop: 20, // Add padding at the top
-  },
-  imagePicker: {
-    backgroundColor: '#333',
-    borderRadius: 20,
-    width: 300,
-    height: 300,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    overflow: 'hidden',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  imagePickerText: {
-    color: '#fff',
-    textAlign: 'center',
-  }
-  // ... other styles you might need ...
-});
+  const styles = StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: '#000', // Set the background color for the safe area
+    },
+    container: {
+      flex: 1,
+      backgroundColor: '#000', // Dark background
+      alignItems: 'stretch', // Stretch child components
+      justifyContent: 'flex-start', // Align to top
+      paddingTop: 20, // Add padding at the top
+    },
+    imagePicker: {
+      backgroundColor: '#333',
+      borderRadius: 20,
+      width: 300,
+      height: 300,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 20,
+      overflow: 'hidden',
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+    },
+    imagePickerText: {
+      color: '#fff',
+      textAlign: 'center',
+    }
+    // ... other styles you might need ...
+  });
