@@ -3,7 +3,13 @@ import {Ionicons} from '@expo/vector-icons'
 
 export default ()  => {
     return (
-        <Tabs>
+        <Tabs
+        screenOptions={{
+            tabBarStyle: { 
+                backgroundColor: '#000',
+                borderTopWidth: 0}}}>
+            <Tabs.Screen name="Profile" />
+
             <Tabs.Screen 
                 name="CameraView" 
                 options={{
