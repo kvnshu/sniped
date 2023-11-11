@@ -21,8 +21,6 @@ export default function App() {
     })
   }, [])
 
-  console.log(session)
-
   return (
     <View>
       {session && session.user ? <Redirect href="/FeedView" /> : <Login />}
