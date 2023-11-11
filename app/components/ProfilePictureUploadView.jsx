@@ -3,6 +3,7 @@ import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import PrimaryButton from '../components/PrimaryButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
 const ProfilePictureUploadView = () => {
     const [profileImage, setProfileImage] = useState(null);
@@ -16,10 +17,14 @@ const ProfilePictureUploadView = () => {
             quality: 1,
         });
 
-        if (!result.cancelled) {
+        if (!result.canceled) {
             setProfileImage(result.uri);
         }
     };
+
+    const handlePress = () => {
+        router.push('/')
+    }
 
     return (
         <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom,backgroundColor: '#000'}}>
@@ -27,7 +32,7 @@ const ProfilePictureUploadView = () => {
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
                     {profileImage ? (
-                        <Image source={{ uri: profileImage }} style={styles.image} />
+                        <Image source={{ assets: profileImage }} style={styles.image} />
                     ) : (
                         <Text style={styles.imagePickerText}>Tap here to select image</Text>
                     )}
@@ -35,7 +40,7 @@ const ProfilePictureUploadView = () => {
             </View>
             <View style={styles.buttonContainer}>
                 <PrimaryButton 
-                    onPress={() => console.log('Next pressed')} 
+                    onPress={() => handlePress()} 
                     disabled={!profileImage} // Button is disabled if no profile image is selected
                 />
             </View>

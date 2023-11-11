@@ -4,12 +4,22 @@ import CustomTextInput from '../components/CustomTextInput'; // Import the custo
 import {useSafeAreaInsets } from 'react-native-safe-area-context';
 import PrimaryButton from '../components/PrimaryButton'; // Import the new component
 import { router } from 'expo-router';
+import { supabase } from '../lib/supabase';
 
 const FirstNameInputView = () => {
     const [firstName, setFirstName] = useState('');
-    const insets = useSafeAreaInsets();
 
     const isButtonDisabled = firstName.trim().length === 0;
+
+    
+    const insets = useSafeAreaInsets();
+
+    const handlePress = async () => {
+        await supabase
+            .from('users')
+            .update()
+      // router.push("/ProfilePictureUploadView")
+    }
 
     return (
         <KeyboardAvoidingView 
@@ -25,7 +35,7 @@ const FirstNameInputView = () => {
             />
             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
                 <PrimaryButton 
-                    onPress={() => router.push("ProfilePictureUploadView")} 
+                    onPress={() => handlePress()} 
                     disabled={isButtonDisabled} // Button is disabled if firstName
                 />
             </View>
