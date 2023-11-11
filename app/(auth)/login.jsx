@@ -122,16 +122,14 @@ export default function Login() {
 
   async function authWithPhone() {
     setLoading(true);
-    console.log(phone)
     const { data, error } = await supabase.auth.signInWithOtp({ phone });
 
-    console.log(data)
-
-    if (error) Alert.alert(error.message);
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      advanceToNextStep();
+    }
     setLoading(false);
-
-    advanceToNextStep();
-    
   }
 
   async function verifyOtp() {
