@@ -6,7 +6,7 @@ import FirstNameInputView from './(auth)/FirstNameInputView';
 import { Redirect } from 'expo-router';
 
 const StartPage = () => {
-    const loggedIn = false;
+    const loggedIn = true;
 
     let [fontsLoaded] = useFonts({
         Inter_900Black,
