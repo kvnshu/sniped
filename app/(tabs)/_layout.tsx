@@ -7,6 +7,7 @@ export default ()  => {
             tabBarShowLabel: false, // Hides the tab label
           }}
         >
+            <Tabs.Screen name="Profile" />
             <Tabs.Screen name="CameraView" />
             <Tabs.Screen name="FeedView" />
         </Tabs>
