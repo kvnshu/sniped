@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "sniped",
-    "slug": "sniped",
+    "slug": "snipe",
+    "scheme": "sniped-scheme",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.sniped"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +27,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "4e30c71d-1730-4a46-8800-9bcbbdd1acf7"
+      }
+    },
+    "owner": "williamkcu"
   }
 }
