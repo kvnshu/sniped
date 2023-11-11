@@ -111,11 +111,13 @@ export default function Login() {
   };
 
   const advanceToNextStep = () => {
-    setOnboardingStep(prevStep => prevStep + 1);
+    print(onboardingStep)
+    setOnboardingStep(onboardingStep + 1);
+    print(onboardingStep)
   };
 
   const goToPreviousStep = () => {
-    setOnboardingStep(prevStep => prevStep - 1);
+    setOnboardingStep(onboardingStep - 1);
   };
 
   async function authWithPhone() {
