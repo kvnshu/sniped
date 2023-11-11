@@ -8,6 +8,8 @@ export default ()  => {
             tabBarStyle: { 
                 backgroundColor: '#000',
                 borderTopWidth: 0}}}>
+            <Tabs.Screen name="Profile" />
+
             <Tabs.Screen 
                 name="CameraView" 
                 options={{
