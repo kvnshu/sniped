@@ -136,7 +136,7 @@ export default function Login({ user, setUser }) {
   // Step 2
   async function verifyOtp() {
     setLoading(true);
-    const phoneNumber = parsePhoneNumberFromString(phoneInput, 'US') 
+    const phoneNumber = parsePhoneNumberFromString(phoneInput, 'US')
     const phoneFormatted = phoneNumber.number
     const { data: { session }, error } = await supabase.auth.verifyOtp({
       phone: phoneFormatted, token, type: 'sms',
@@ -146,38 +146,27 @@ export default function Login({ user, setUser }) {
       // e.g. timeout or invalid 
       Alert.alert(error.message);
       setLoading(false);
-      goToPreviousStep();
+      setOnboardingStep(1);
       setToken('')
       return
     }
-    setLoading(false);
 
-    // TODO: FIX THIS LOGIC
-    // insert value into 
-    const { data: users, selectError } = await supabase
+    const { data, selectError } = await supabase
       .from('users')
-      .select('phone')
-      .eq('phone', phone)
-    
-    userExists = users.length != 0;
+      .select('*')
+      .eq('phone', phoneNumber.countryCallingCode + phoneNumber.nationalNumber)
+      .limit(1)
 
-    if (userExists){
-     //router.push('/');
-     console.log("user exists");
+    if (data[0].registered) {
+      setUser(data[0])
+      // router.push('/')
     } else {
-      //router.push('/FirstNameInputView');
-      console.log("user doesnt exists");
+      setOnboardingStep(2);
     }
+    setToken('');
     setLoading(false);
-
-    advanceToNextStep();
   }
 
-  async function handleNameInput(){
-    
-  }
-
-  async function pickImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
