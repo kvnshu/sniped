@@ -11,8 +11,9 @@ import CustomNumberInput from '../../components/CustomNumberInput';
 import CustomTextInput from '../../components/CustomTextInput';
 import { parsePhoneNumberFromString, isValidNumber, parse } from 'libphonenumber-js';
 import { decode } from 'base64-arraybuffer'
+import { useUser } from '../contexts/UserContext';
 
-export default function Login({ user, setUser }) {
+export default function Login() {
 
   const [loading, setLoading] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
@@ -25,6 +26,10 @@ export default function Login({ user, setUser }) {
   const isNameButtonDisabled = fullName.trim().length === 0;
   const isPhoneButtonDisabled = phoneInput.trim().length >= 10;
   const isVerificationEnabled = token.trim().length == 6;
+
+  const { user, setUser } = useUser(); 
+
+  
 
   const renderOnboardingScreen = () => {
     switch (onboardingStep) {
@@ -181,7 +186,7 @@ export default function Login({ user, setUser }) {
     const { data, error } = await supabase
       .from('users')
       .update({
-        fullname: fullName,
+        full_name: fullName,
         profile_filename: fileName,
         registered: true,
       })

@@ -1,11 +1,25 @@
 // HomeScreen.js
 import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import Post from '../../components/Post';
 import {useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useUser } from '../contexts/UserContext';
+
 
 const FeedView = () => {
   const insets = useSafeAreaInsets();
+
+
+  const { user } = useUser();
+  if (!user) {
+    // Render a loading spinner or a message indicating that user data is loading
+    return <ActivityIndicator size="large" />;
+  }
+/*
+  if (loading) {
+    // Render loading indicator while user data is loading
+    return <ActivityIndicator size="large" />;
+  }*/
 
   const posts = [
     {
