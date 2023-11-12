@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, Alert, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../lib/supabase';
 import PhoneNumberInput from '../../components/PhoneNumberInput'; // Import your custom phone number input component
 import PrimaryButton from '../../components/PrimaryButton'; // Import your custom button component
-import { router } from 'expo-router';
 import CustomNumberInput from '../../components/CustomNumberInput';
 import CustomTextInput from '../../components/CustomTextInput';
 import * as ImagePicker from 'expo-image-picker';
