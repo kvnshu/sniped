@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity, Keyboard} from 'react-native';
+import { View, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity, Keyboard } from 'react-native';
 import PrimaryButton from './PrimaryButton';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { supabase } from '../app/lib/supabase';
 
 //HOW TO USE:
 /*Fill in the following values:
@@ -13,7 +14,6 @@ import Ionicons from '@expo/vector-icons/Ionicons';
  function is called once submission of autocomplete is "confirmed"
 
  Data is a list of potential text options with keys / ids associated. See this for an example:
-
 
  Example Call in Parent:
  const handleSelection = (selectedKey) => {
@@ -34,11 +34,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
  */
 
 
-const AutocompleteInput = ({ title, placeholder, onSelect, data, onExit}) => {
+const AutocompleteInput = ({ title, placeholder, onSelect, data, onExit }) => {
     const inputRef = useRef(null);
     const [value, setValue] = useState('');
     const [filteredData, setFilteredData] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null); 
+    const [selectedItem, setSelectedItem] = useState(null);
 
     const handleScrollBegin = () => {
         Keyboard.dismiss(); // Dismiss the keyboard when scrolling begins
@@ -46,12 +46,12 @@ const AutocompleteInput = ({ title, placeholder, onSelect, data, onExit}) => {
 
     const handleSubmitButton = () => {
         if (selectedItem && onSelect) {
-            onSelect(selectedItem.key);
+            onSelect(selectedItem.id);
         }
     };
 
     const handleItemPress = (item) => {
-        Keyboard.dismiss(); 
+        Keyboard.dismiss();
         setSelectedItem(item);
     };
 
@@ -63,32 +63,34 @@ const AutocompleteInput = ({ title, placeholder, onSelect, data, onExit}) => {
     }, []);
 
     useEffect(() => {
-        const filtered = data.filter(item => 
-            item.name.toLowerCase().startsWith(value.toLowerCase())
+        const filtered = data.filter(item =>
+            item.full_name.toLowerCase().startsWith(value.toLowerCase())
         );
         setFilteredData(filtered);
     }, [value, data]);
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
-            style={[styles.item, selectedItem?.key === item.key && styles.selectedItem]}
+            style={[styles.item, selectedItem?.id === item.id && styles.selectedItem]}
             onPress={() => handleItemPress(item)}
+            key={item.id}
         >
-            <Image source={{ uri: item.profilePic }} style={styles.profilePic} />
-            <Text style={styles.username}>{item.name}</Text>
+            <Image
+                style={styles.profilePic}
+                src={supabase.storage.from('profiles').getPublicUrl(item.profile_filename).data.publicUrl}
+            />
+            <Text style={styles.username}>{item.full_name}</Text>
         </TouchableOpacity>
-       
     );
-
     return (
         <View style={styles.container}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={styles.title}>{title}</Text>
                 <TouchableOpacity style={styles.closeButton} onPress={onExit}>
                     <Ionicons name="close" size={35} color="#ccc" />
                 </TouchableOpacity>
             </View>
-            
+
             <TextInput
                 ref={inputRef}
                 style={styles.input}
@@ -104,7 +106,7 @@ const AutocompleteInput = ({ title, placeholder, onSelect, data, onExit}) => {
                 style={styles.listStyle}
                 data={filteredData}
                 renderItem={renderItem}
-                keyExtractor={item => item.key}
+                keyExtractor={item => item.id}
             />
             {selectedItem && (
                 <View style={styles.buttonContainer}>
@@ -175,7 +177,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#00001a', // Slightly different background
         borderTopEndRadius: 10,
         borderTopStartRadius: 10,
-        
+
     }
 });
 

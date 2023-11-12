@@ -15,10 +15,12 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Redirect } from "expo-router";
 
 import Login from "./(auth)/login";
+import { useUser } from './contexts/UserContext'; // adjust the path as necessary
+
 
 const StartPage = () => {
   const [session, setSession] = useState(null);
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useUser();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -48,11 +50,12 @@ const StartPage = () => {
   }
 
   return (
-    <View style={styles.fullScreen}>
-      <SafeAreaProvider>
-        {session && user?.registered ? <Redirect href="/FeedView" /> : <Login user={user} setUser={setUser} />}
-      </SafeAreaProvider>
-    </View>
+        <View style={styles.fullScreen}>
+            <SafeAreaProvider>
+                {session && user?.registered ? <Redirect href="/FeedView" /> : <Login />}
+            </SafeAreaProvider>
+        </View>
+    
   );
 };
 
