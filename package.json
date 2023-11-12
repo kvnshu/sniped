@@ -29,6 +29,7 @@
     "package.json": "^2.0.1",
     "react": "18.2.0",
     "react-native": "0.72.6",
+    "react-native-autocomplete-input": "^5.4.0",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-picker": "^4.3.7",
