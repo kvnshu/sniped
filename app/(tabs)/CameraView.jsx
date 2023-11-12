@@ -7,15 +7,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import AutocompleteInput from '../../components/AutocompleteInput';
 import { supabase } from '../lib/supabase';
 import { decode } from 'base64-arraybuffer'
-
-//TODO:
-/*
-Load user data / contacts into the "data" tab. We need this data ready as soon as "selectedPhoto"
-is set to true.
-
-Handle uploading of image, with tagged user, timestamp, etc. Do so in  "handleUserTagged". This is
-called after a user clicked "Post Snipe" in AutocompleteInput.jsx
-*/
+import { useUser } from '../contexts/UserContext';
 
 const CameraView = () => {
     const [hasPermission, setHasPermission] = useState(null);
@@ -25,17 +17,11 @@ const CameraView = () => {
     const [selectedPhoto, setSelectedPhoto] = useState(false);
     const [snipeeUserId, setSnipeeUserId] = useState('');
     const [followedUsers, setFollowedUsers] = useState([])
-
-    const logUser = {
-        id: "68fda063-35c1-43f0-a3da-c34a1452921f"
-    }
+    const { user, setUser } = useUser();
 
     const insets = useSafeAreaInsets();
 
     const handleUserTagged = async (selectedKey) => {
-        console.log("Selected Key:", selectedKey);
-        console.log('Posting photo:', photoUri);
-
         const snipeFileName = `snipe_${Math.floor(new Date().getTime() / 1000)}.jpg`
         await uploadSnipeImage(snipeFileName, photoUri)
 
@@ -43,7 +29,7 @@ const CameraView = () => {
         const { data, error } = await supabase
             .from('snipes')
             .insert({
-                user_id1: logUser.id,
+                user_id1: user.id,
                 user_id2: selectedKey,
                 file_name: snipeFileName,
             })
@@ -112,11 +98,10 @@ const CameraView = () => {
                      *
                   )
                 `)
-                .eq('user_id1', logUser.id)
+                .eq('user_id1', user.id)
 
             const parsedData = data.map((x) => (x.users))
             setFollowedUsers(parsedData);
-            console.log(followedUsers)
         }
         fetchData()
     }, []);
