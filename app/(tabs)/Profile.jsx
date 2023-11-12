@@ -16,8 +16,6 @@ import PhoneNumberInput from "../../components/PhoneNumberInput";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   parsePhoneNumberFromString,
-  isValidNumber,
-  parse,
 } from "libphonenumber-js";
 import PrimaryButton from "../../components/PrimaryButton";
 import { useUser } from "../contexts/UserContext";
@@ -59,23 +57,29 @@ const Profile = () => {
         return;
       }
       // upsert record where logname follows friend in following table
+      console.log(user.id)
+      console.log(userData[0].id)
       const { data: followingData, error: followingError } = await supabase
         .from("following")
         .upsert({
           user_id1: user.id,
           user_id2: userData[0].id
         },
-          { onConflict: 'user_id1, user_id2' }
+          {
+            onConflict: 'user_id1, user_id2',
+            ignoreDuplicates: true
+          }
         )
         .select();
+      console.log(followingData)
 
       if (followingError) {
-        Alert.alert("Oops! Unable to friend user:");
+        Alert.alert("Oops! Unable to friend user:", followingError.message);
       } else {
         Alert.alert("Befriended phone number!");
       }
     } else {
-      Alert.alert("Oops! Invalid phone number.");
+      Alert.alert("Oops! Invalid phone number:", phoneInput);
       setPhoneInput("");
     }
     Keyboard.dismiss()
@@ -86,36 +90,36 @@ const Profile = () => {
   return (
     <KeyboardAvoidingView style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View
-        style={{ flex: 1, paddingTop: insets.top, backgroundColor: "#000" }}
-      >
-        <Text style={styles.title}>Profile</Text>
-        <View>
-          <Text>Are you sure you want to log out?</Text>
-          <PrimaryButton
-            title="Logout"
-            disabled={loading}
-            onPress={handleLogout}
+        <View
+          style={{ flex: 1, paddingTop: insets.top, backgroundColor: "#000" }}
+        >
+          <Text style={styles.title}>Profile</Text>
+          <View>
+            <Text>Are you sure you want to log out?</Text>
+            <PrimaryButton
+              title="Logout"
+              disabled={loading}
+              onPress={handleLogout}
+            />
+          </View>
+
+          <PhoneNumberInput
+            title="💃 Add your friend via phone number"
+            value={phoneInput}
+            onChangeText={setPhoneInput}
+            placeholder="12345678901"
           />
+          <View style={{ paddingTop: 20, paddingBottom: 250 }}>
+            <PrimaryButton
+              title="Add Friend"
+              disabled={loading}
+              onPress={handleSubmit}
+            />
+          </View>
         </View>
 
-        <PhoneNumberInput
-          title="💃 Add your friend via phone number"
-          value={phoneInput}
-          onChangeText={setPhoneInput}
-          placeholder="12345678901"
-        />
-        <View style={{ paddingTop: 20, paddingBottom: 250 }}>
-          <PrimaryButton
-            title="Add Friend"
-            disabled={loading}
-            onPress={handleSubmit}
-          />
-        </View>
-      </View>
-        
       </TouchableWithoutFeedback>
-      
+
     </KeyboardAvoidingView>
   );
 };

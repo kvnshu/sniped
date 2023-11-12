@@ -121,7 +121,7 @@ export default function Login() {
       const formatted = phoneNumber.number
       const { data, error } = await supabase.auth.signInWithOtp({ 'phone': formatted });
       if (error) {
-        Alert.alert('Error: could not sign up with that phone number.')
+        Alert.alert('Error: could not sign up with that phone number:', error)
       } else {
         setOnboardingStep(1);
       }
@@ -143,6 +143,7 @@ export default function Login() {
 
     if (error) {
       // e.g. timeout or invalid 
+      // Alert.alert(error);
       Alert.alert(error.message);
       setLoading(false);
       setOnboardingStep(1);
