@@ -9,7 +9,7 @@ import PhoneNumberInput from '../../components/PhoneNumberInput'; // Import your
 import PrimaryButton from '../../components/PrimaryButton'; // Import your custom button component
 import CustomNumberInput from '../../components/CustomNumberInput';
 import CustomTextInput from '../../components/CustomTextInput';
-import * as ImagePicker from 'expo-image-picker';
+import { parsePhoneNumberFromString, isValidNumber, parse } from 'libphonenumber-js';
 
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -125,20 +125,31 @@ export default function Login() {
 
   async function authWithPhone() {
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithOtp({ phone });
-
-    if (error) {
-      Alert.alert(error.message);
+    const phoneNumber = parsePhoneNumberFromString(phoneInput, 'US');
+    // Check if the phone number is valid
+    if (phoneNumber.isValid()) {
+      // Format the phone number in E.164 format
+      const formatted = phoneNumber.number
+      const { data, error } = await supabase.auth.signInWithOtp({ 'phone': formatted });
+      if (error){
+        Alert.alert('Error: could not sign up with that phone number.')
+      } else {
+        setOnboardingStep(1);
+      }
     } else {
-      advanceToNextStep();
+      Alert.alert('Invalid phone number');
+      setPhone('')
     }
     setLoading(false);
   }
 
+  // Step 2
   async function verifyOtp() {
     setLoading(true);
+    const phoneNumber = parsePhoneNumberFromString(phoneInput, 'US') 
+    const phoneFormatted = phoneNumber.number
     const { data: { session }, error } = await supabase.auth.verifyOtp({
-      phone, token, type: 'sms',
+      phone: phoneFormatted, token, type: 'sms',
     });
 
     if (error) {
