@@ -232,38 +232,50 @@ export default function Login() {
     // ACCESSING USER CONTACTS:
 
     // Request permission to access contacts
-  const { status } = await Contacts.requestPermissionsAsync();
-  if (status === 'granted') {
-    // Permission was granted
-    try {
-      // Fetch contacts
-      const { data } = await Contacts.getContactsAsync({
-        fields: [Contacts.Fields.PhoneNumbers],
-      });
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status === 'granted') {
+        try {
+            // Fetch contacts with phone numbers and names
+            const { data } = await Contacts.getContactsAsync({
+                fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.FirstName, Contacts.Fields.LastName],
+            });
 
-      if (data.length > 0) {
-        // Process or sync contacts here
-        console.log('Contacts:', data);
-        // For example, send to your server or store locally
-      } else {
-        console.log('No contacts found.');
-      }
+            if (data.length > 0) {
+                // Filter contacts to only those with a phone number and at least one name
+                const filteredContacts = data.filter(contact => {
+                    return contact.phoneNumbers && 
+                           (contact.firstName || contact.lastName);
+                }).map(contact => ({
+                    fullName: `${contact.firstName || ''} ${contact.lastName || ''}`.trim(),
+                    phoneNumbers: contact.phoneNumbers,
+                }));
 
-      //ONCE CONTACTS ARE SYNCHED, ADVANCE TO NEXT PAGE
-      setUser(data[0]); 
-      console.log(user);
-      setLoading(false);
-      router.push('/');
-
-    } catch (error) {
-      console.error('Error fetching contacts:', error);
-      Alert.alert('Error', 'Unable to fetch contacts.');
+                // query db for users where phone numbers are already in the db
+                // for each matching user, create a following from user.id to matchingUser.id 
+                const {data, error} = await supabase
+                  .from('users')
+                  .select('*')
+                console.log(JSON.stringify(filteredContacts, null, 2));
+                
+                //ONCE CONTACTS ARE SYNCHED, ADVANCE TO NEXT PAGE
+                setUser(data[0]); 
+                console.log(user);
+                setLoading(false);
+                router.push('/');
+            } else {
+                console.log('No contacts found.');
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Error fetching contacts:', error);
+            Alert.alert('Error', 'Unable to fetch contacts.');
+            setLoading(false);
+        }
+    } else {
+        // Permission was denied
+        Alert.alert('Permission Denied', 'Access to contacts was not granted.');
+        setLoading(false);
     }
-  } else {
-    // Permission was denied
-    Alert.alert('Permission Denied', 'Access to contacts was not granted.');
-  }
-
   
     // After syncing contacts
 
