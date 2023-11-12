@@ -181,7 +181,7 @@ export default function Login({ user, setUser }) {
     const { data, error } = await supabase
       .from('users')
       .update({
-        fullname: fullName,
+        full_name: fullName,
         profile_filename: fileName,
         registered: true,
       })
