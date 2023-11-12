@@ -17,8 +17,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Login({ user, setUser }) {
 
   const [loading, setLoading] = useState(false);
-  const [phone, setPhone] = useState('');
   const [onboardingStep, setOnboardingStep] = useState(0);
+  const [phoneInput, setPhone] = useState('');
   const [token, setToken] = useState('');
   const [fullName, setFirstName] = useState('');
   const insets = useSafeAreaInsets();
@@ -34,9 +34,9 @@ export default function Login({ user, setUser }) {
           <View style={{ flex: 1, paddingTop: insets.top }}>
             <PhoneNumberInput
               title="☎️ Phone Number, por favor!"
-              value={phone}
+              value={phoneInput}
               onChangeText={setPhone}
-              placeholder="+12345678901"
+              placeholder="12345678901"
             />
 
             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
