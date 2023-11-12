@@ -167,6 +167,13 @@ export default function Login({ user, setUser }) {
     setLoading(false);
   }
 
+  // Step 3
+  async function handleNameInput() {
+    setLoading(true)
+    setOnboardingStep(3);
+    setLoading(false)
+  }
+
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
