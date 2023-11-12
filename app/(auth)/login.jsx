@@ -14,9 +14,7 @@ import { parsePhoneNumberFromString, isValidNumber, parse } from 'libphonenumber
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function Login() {
-  const insets = useSafeAreaInsets();
-  const [profileImage, setProfileImage] = useState(null);
+export default function Login({ user, setUser }) {
 
   const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState('');

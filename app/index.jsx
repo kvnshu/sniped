@@ -28,6 +28,7 @@ const StartPage = () => {
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
+
   }, []);
 
   let [fontsLoaded] = useFonts({
@@ -49,8 +50,7 @@ const StartPage = () => {
   return (
     <View style={styles.fullScreen}>
       <SafeAreaProvider>
-        {/*TODO fix logic to allow new users to input name*/}
-        {session && user?.registered ? <Redirect href="/FeedView" /> : <Login />}
+        {session && user?.registered ? <Redirect href="/FeedView" /> : <Login user={user} setUser={setUser} />}
       </SafeAreaProvider>
     </View>
   );
