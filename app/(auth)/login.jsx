@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Alert, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, Image, Text, Alert, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -10,9 +10,7 @@ import PrimaryButton from '../../components/PrimaryButton'; // Import your custo
 import CustomNumberInput from '../../components/CustomNumberInput';
 import CustomTextInput from '../../components/CustomTextInput';
 import { parsePhoneNumberFromString, isValidNumber, parse } from 'libphonenumber-js';
-
-
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { decode } from 'base64-arraybuffer'
 
 export default function Login({ user, setUser }) {
 
@@ -22,9 +20,10 @@ export default function Login({ user, setUser }) {
   const [token, setToken] = useState('');
   const [fullName, setFirstName] = useState('');
   const insets = useSafeAreaInsets();
+  const [profileImage, setProfileImage] = useState(null);
 
-  const isNameButtonDisabled = firstName.trim().length === 0;
-  const isPhoneButtonDisabled = phone.trim().length >= 10;
+  const isNameButtonDisabled = fullName.trim().length === 0;
+  const isPhoneButtonDisabled = phoneInput.trim().length >= 10;
   const isVerificationEnabled = token.trim().length == 6;
 
   const renderOnboardingScreen = () => {
@@ -85,24 +84,19 @@ export default function Login({ user, setUser }) {
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
                 {profileImage ? (
-                  <Image source={{ assets: profileImage }} style={styles.image} />
+                  <Image source={{ uri: profileImage }} style={styles.image} />
                 ) : (
                   <Text style={styles.imagePickerText}>Tap here to select image</Text>
                 )}
               </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
-                <PrimaryButton 
-                    onPress={handleProfileInput()} 
-                    disabled={!profileImage} // Button is disabled if no profile image is selected
-                />
+              <PrimaryButton
+                onPress={handleImageInput}
+                disabled={!profileImage} // Button is disabled if no profile image is selected
+              />
             </View>
           </View>
-        );
-
-      case 4:
-        return (
-          <Text>Completed onboarding, return to Feed!!</Text>
         );
 
       default:
@@ -121,7 +115,7 @@ export default function Login({ user, setUser }) {
       // Format the phone number in E.164 format
       const formatted = phoneNumber.number
       const { data, error } = await supabase.auth.signInWithOtp({ 'phone': formatted });
-      if (error){
+      if (error) {
         Alert.alert('Error: could not sign up with that phone number.')
       } else {
         setOnboardingStep(1);
@@ -174,22 +168,91 @@ export default function Login({ user, setUser }) {
     setLoading(false)
   }
 
+  // Step 4
+  async function handleImageInput() {
+    setLoading(true)
+    const phoneNumber = parsePhoneNumberFromString(phoneInput, 'US')
+
+    // uplaod image
+    // TODO: improve profile filenames
+    const fileName = `profile_${phoneNumber.nationalNumber}.jpg`
+    await uploadProfileImage(fileName, profileImage)
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        fullname: fullName,
+        profile_filename: fileName,
+        registered: true,
+      })
+      .eq('phone', phoneNumber.countryCallingCode + phoneNumber.nationalNumber)
+      .select()
+
+    if (error) {
+      console.error('Error registering user:', error.message);
+    } else {
+      console.log('User registered successfully:', data);
+    }
+
+    setUser(data[0])
+    console.log(user)
+    setOnboardingStep(4)
+    setLoading(false)
+    router.push('/')
+  }
+
+  const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
     });
 
+    // console.log(result);
+
     if (!result.canceled) {
-        setProfileImage(result.uri);
+      setProfileImage(result.assets[0].uri);
     }
   };
 
+  const uploadProfileImage = async (fileName, imageUri) => {
+    // Upload the image to Supabase Storage
+    const base64_string = await uriToBase64(imageUri);
+    const { data, error } = await supabase
+      .storage
+      .from('profiles')
+      .upload(fileName, decode(base64_string), {
+        contentType: 'image/png',
+        upsert: true
+      })
 
-  async function handleProfileInput() {
-    advanceToNextStep();
-  };
+
+    if (error) {
+      console.error('Error uploading image:', error.message);
+    } else {
+      console.log('Image uploaded successfully:', data);
+    }
+  }
+
+  async function uriToBase64(uri) {
+    try {
+      // Fetch the content of the URI
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      // Convert blob to base64
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error converting URI to base64:', error);
+      throw error;
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -230,6 +293,18 @@ const styles = StyleSheet.create({
   imagePickerText: {
     color: '#fff',
     textAlign: 'center',
-  }
+  },
+  title: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginHorizontal: 20,
+    marginTop: 20,
+    fontFamily: 'Inter_700Bold',
+    textAlign: 'left',
+  },
+  buttonContainer: {
+    padding: 20,
+  },
   // ... other styles you might need ...
 });
