@@ -20,7 +20,8 @@ export default function Login({ user, setUser }) {
   const [phone, setPhone] = useState('');
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [token, setToken] = useState('');
-  const [firstName, setFirstName] = useState('');
+  const [fullName, setFirstName] = useState('');
+  const insets = useSafeAreaInsets();
 
   const isNameButtonDisabled = firstName.trim().length === 0;
   const isPhoneButtonDisabled = phone.trim().length >= 10;
@@ -64,17 +65,17 @@ export default function Login({ user, setUser }) {
           <View style={{ flex: 1, paddingTop: insets.top }}>
             <CustomTextInput
               title="👋 What's your full name?"
-              value={firstName}
+              value={fullName}
               onChangeText={setFirstName}
               placeholder="Seth Rogan..."
             />
             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
-                <PrimaryButton 
-                    onPress={() => handlePress()} 
-                    disabled={isNameButtonDisabled} // Button is disabled if firstName
-                />
+              <PrimaryButton
+                onPress={handleNameInput}
+                disabled={isNameButtonDisabled} // Button is disabled if firstName
+              />
             </View>
-        </View>
+          </View>
         );
 
       case 3: // Image
