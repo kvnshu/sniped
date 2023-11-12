@@ -12,6 +12,7 @@ import CustomTextInput from '../../components/CustomTextInput';
 import { parsePhoneNumberFromString, isValidNumber, parse } from 'libphonenumber-js';
 import { decode } from 'base64-arraybuffer'
 import { useUser } from '../contexts/UserContext';
+import * as Contacts from 'expo-contacts';
 
 export default function Login() {
 
@@ -104,6 +105,21 @@ export default function Login() {
           </View>
         );
 
+      case 4: // Contact Sync
+        return (
+          <View style={{ flex: 1, paddingTop: insets.top }}>
+            <Text style={styles.title}>
+              📇 Sync Contacts
+            </Text>
+            <Text style={styles.description}>
+              Would you like to sync your contacts? This helps you connect with friends on our platform.
+            </Text>
+            <View style={styles.buttonContainer}>
+              <PrimaryButton title="Sync Contacts" onPress={handleContactSync} />
+            </View>
+          </View>
+        );
+
       default:
         return (
           <Text>Something went wrong. Beep boop buup.</Text>
@@ -176,34 +192,87 @@ export default function Login() {
   // Step 4
   async function handleImageInput() {
     setLoading(true)
+   
+   
+    //setUser(data[0])
+    //GETDATAFORUSER
+    setOnboardingStep(4)
+    setLoading(false)
+   
+  }
+
+  async function handleContactSync() {
+    setLoading(true);
+
+    //SAVE NAME AND PROFILEPICTURE (CASE 2 & 3):
     const phoneNumber = parsePhoneNumberFromString(phoneInput, 'US')
 
     // uplaod image
     // TODO: improve profile filenames
     const fileName = `profile_${phoneNumber.nationalNumber}.jpg`
     await uploadProfileImage(fileName, profileImage)
-
     const { data, error } = await supabase
-      .from('users')
-      .update({
-        full_name: fullName,
-        profile_filename: fileName,
-        registered: true,
-      })
-      .eq('phone', phoneNumber.countryCallingCode + phoneNumber.nationalNumber)
-      .select()
+    .from('users')
+    .update({
+      full_name: fullName,
+      profile_filename: fileName,
+      registered: true,
+    })
+    .eq('phone', phoneNumber.countryCallingCode + phoneNumber.nationalNumber)
+    .select()
 
-    if (error) {
-      console.error('Error registering user:', error.message);
-    } else {
-      console.log('User registered successfully:', data);
+  if (error) {
+    console.error('Error registering user:', error.message);
+  } else {
+    console.log('User registered successfully:', data);
+  }
+
+
+
+    // ACCESSING USER CONTACTS:
+
+    // Request permission to access contacts
+  const { status } = await Contacts.requestPermissionsAsync();
+  if (status === 'granted') {
+    // Permission was granted
+    try {
+      // Fetch contacts
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.PhoneNumbers],
+      });
+
+      if (data.length > 0) {
+        // Process or sync contacts here
+        console.log('Contacts:', data);
+        // For example, send to your server or store locally
+      } else {
+        console.log('No contacts found.');
+      }
+
+      //ONCE CONTACTS ARE SYNCHED, ADVANCE TO NEXT PAGE
+      setUser(data[0]); 
+      console.log(user);
+      setLoading(false);
+      router.push('/');
+
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+      Alert.alert('Error', 'Unable to fetch contacts.');
     }
+  } else {
+    // Permission was denied
+    Alert.alert('Permission Denied', 'Access to contacts was not granted.');
+  }
 
-    setUser(data[0])
-    console.log(user)
-    setOnboardingStep(4)
-    setLoading(false)
-    router.push('/')
+  
+    // After syncing contacts
+
+
+    
+    setUser(data[0]); 
+    console.log(user);
+    setLoading(false);
+    router.push('/'); // or navigate to the next screen
   }
 
   const pickImage = async () => {
