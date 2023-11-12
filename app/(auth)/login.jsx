@@ -113,16 +113,7 @@ export default function Login() {
     }
   };
 
-  const advanceToNextStep = () => {
-    print(onboardingStep)
-    setOnboardingStep(onboardingStep + 1);
-    print(onboardingStep)
-  };
-
-  const goToPreviousStep = () => {
-    setOnboardingStep(onboardingStep - 1);
-  };
-
+  // Step 1
   async function authWithPhone() {
     setLoading(true);
     const phoneNumber = parsePhoneNumberFromString(phoneInput, 'US');
