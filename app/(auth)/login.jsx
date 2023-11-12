@@ -52,11 +52,11 @@ export default function Login() {
       case 1: // OTP
         return (
           <View style={{ flex: 1, paddingTop: insets.top }}>
-            <CustomNumberInput
-              title="OTP"
+             <CustomNumberInput
+              title="Verify Phone Number"
               value={token}
               onChangeText={setToken}
-              placeholder="Enter your OTP"
+              placeholder="Enter the code sent to your phone"
             />
             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
               <PrimaryButton title="Verify" disabled={loading || !isVerificationEnabled} onPress={verifyOtp} />
