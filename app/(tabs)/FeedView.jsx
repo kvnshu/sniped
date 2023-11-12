@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import Post from '../../components/Post';
-import {useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase'; // Import your Supabase client
+import { useUser } from '../contexts/UserContext';
 /*
 OLD POST STRUCTURE:
 const posts = [
@@ -22,12 +23,14 @@ const posts = [
 const FeedView = () => {
   const insets = useSafeAreaInsets();
   const [posts, setPosts] = useState([]);
+  const { user, setUser } = useUser();
+
+
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const userId = '68fda063-35c1-43f0-a3da-c34a1452921f'; //Will: eff113e7-b23d-4d1b-830b-fb9d3d81083c'
-      //Kevin: 68fda063-35c1-43f0-a3da-c34a1452921f
-    
+      const userId = user.id;
+
       // Fetch posts where user_id1 matches userId
       const { data: data1, error: error1 } = await supabase
         .from('snipes')
@@ -43,10 +46,10 @@ const FeedView = () => {
           )
         `)
         .eq('user_id1', userId);
-    
+
       // Handle error
       if (error1) {
-       console.log('Error fetching posts for user_id1:', error1);
+        console.log('Error fetching posts for user_id1:', error1);
         return;
       }
 
@@ -54,27 +57,27 @@ const FeedView = () => {
       //console.log(data1);
 
 
-    
+
       // Fetch the list of user IDs from the 'following' table
       const { data: followingData, error: followingError } = await supabase
         .from('following')
         .select('user_id2')
         .eq('user_id1', userId);
-    
+
       // Handle error
       if (followingError) {
         console.log('Error fetching following user IDs:', followingError);
         return;
       }
-    
-      
-      
+
+
+
       // Extract user IDs from the following data
       const userIDs = followingData.map(f => f.user_id2);
 
-   //   console.log("following userIDs:");
-     // console.log(userIDs);
-    
+      //   console.log("following userIDs:");
+      // console.log(userIDs);
+
       // Fetch posts where user_id2 is in the list of following user IDs
       const { data: data2, error: error2 } = await supabase
         .from('snipes')
@@ -91,14 +94,14 @@ const FeedView = () => {
         `)
         .in('user_id2', userIDs);
 
-    //  console.log("data2:");
-     // console.log(data2);
+      //  console.log("data2:");
+      // console.log(data2);
 
-        // Handle error
-        if (error2) {
-          console.log('Error fetching posts for user_id2:', error2);
-          return;
-        }
+      // Handle error
+      if (error2) {
+        console.log('Error fetching posts for user_id2:', error2);
+        return;
+      }
 
       const { data: data3, error: error3 } = await supabase
         .from('snipes')
@@ -114,22 +117,22 @@ const FeedView = () => {
           )
         `)
         .eq('user_id2', userId);
-    
+
       // Handle error
       if (error3) {
         console.log('Error fetching posts for user_id1:', error1);
         return;
       }
-   
-    // console.log("data3:");
-     // console.log(data3);
-    
+
+      // console.log("data3:");
+      // console.log(data3);
+
       // Combine the results from both queries
       const combinedData = [
-        ...data1, 
+        ...data1,
         ...data2.filter(d2 => !data1.find(d1 => d1.id === d2.id)),
         ...data3.filter(d3 => !data1.find(d1 => d1.id === d3.id) && !data2.find(d2 => d2.id === d3.id))
-    ];
+      ];
       console.log(combinedData);
 
       // Map the combined data to the format expected by Post component
@@ -149,16 +152,16 @@ const FeedView = () => {
     fetchPosts();
   }, []);
 
-  
-   
 
-  return(
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000',  paddingTop: insets.top }}>
+
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000', paddingTop: insets.top }}>
       <FlatList
-                data={posts}
-                renderItem={({ item }) => <Post post={item} />}
-                keyExtractor={(item) => item.id}
-            />
+        data={posts}
+        renderItem={({ item }) => <Post post={item} />}
+        keyExtractor={(item) => item.id}
+      />
     </View>
   );
 

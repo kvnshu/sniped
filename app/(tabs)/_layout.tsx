@@ -1,34 +1,44 @@
-import {Tabs} from "expo-router"
-import {Ionicons} from '@expo/vector-icons'
+import { Tabs } from "expo-router"
+import { Ionicons } from '@expo/vector-icons'
 
-export default ()  => {
+export default () => {
     return (
         <Tabs
-        screenOptions={{
-            tabBarStyle: { 
-                backgroundColor: '#000',
-                borderTopWidth: 0}}}>
-            <Tabs.Screen name="Profile" />
+            screenOptions={{
+                tabBarStyle: {
+                    backgroundColor: '#000',
+                    borderTopWidth: 0
+                }
+            }}>
+            <Tabs.Screen name="Profile"
+                options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="person-circle-outline" color={color} size={size} />
+                    ),
+                    tabBarShowLabel: false,
+                    headerShown: false
+                }}
+            />
 
-            <Tabs.Screen 
-                name="CameraView" 
+            <Tabs.Screen
+                name="CameraView"
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="camera" color={color} size={size} />
                     ),
                     tabBarShowLabel: false,
                     headerShown: false
-                }} 
+                }}
             />
-            <Tabs.Screen 
-                name="FeedView" 
+            <Tabs.Screen
+                name="FeedView"
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="list" color={color} size={size} />
                     ),
                     tabBarShowLabel: false,
                     headerShown: false
-                }} 
+                }}
             />
         </Tabs>
     )
