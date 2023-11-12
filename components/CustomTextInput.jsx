@@ -21,6 +21,7 @@ const CustomTextInput = ({ title, value, onChangeText, placeholder }) => {
                 value={value}
                 placeholder={placeholder}
                 placeholderTextColor="#ccc"
+                autoComplete='name'
                 autoFocus={true} // Automatically focus this input
             />
         </View>

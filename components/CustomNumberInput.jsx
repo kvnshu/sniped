@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-const PhoneNumberInput = ({ title, value, onChangeText, placeholder }) => {
+const CustomNumberInput = ({ title, value, onChangeText, placeholder }) => {
     const inputRef = useRef(null);
 
     useEffect(() => {
@@ -22,11 +22,12 @@ const PhoneNumberInput = ({ title, value, onChangeText, placeholder }) => {
                 placeholder={placeholder}
                 placeholderTextColor="#ccc"
                 autoFocus={true} // Automatically focus this input
-                keyboardType="phone-pad"
+                keyboardType="number-pad"
+                autoComplete='one-time-code'
             />
         </View>
     );
-}; 
+};
 
 const styles = StyleSheet.create({
     input: {
@@ -55,4 +56,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PhoneNumberInput;
+export default CustomNumberInput;
