@@ -114,15 +114,22 @@ export default function Login() {
   // Step 1
   async function authWithPhone() {
     setLoading(true);
+   
     const phoneNumber = parsePhoneNumberFromString(phoneInput, 'US');
     // Check if the phone number is valid
     if (phoneNumber.isValid()) {
+     
       // Format the phone number in E.164 format
       const formatted = phoneNumber.number
-      const { data, error } = await supabase.auth.signInWithOtp({ 'phone': formatted });
+      const { data, error } = await supabase.auth.signInWithOtp({
+        phone: formatted,
+      })
+    
       if (error) {
+       
         Alert.alert('Error: could not sign up with that phone number:', error)
       } else {
+     
         setOnboardingStep(1);
       }
     } else {
