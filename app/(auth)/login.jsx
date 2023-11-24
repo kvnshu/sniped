@@ -12,6 +12,7 @@ import CustomTextInput from '../../components/CustomTextInput';
 import { parsePhoneNumberFromString, isValidNumber, parse } from 'libphonenumber-js';
 import { decode } from 'base64-arraybuffer'
 import { useUser } from '../contexts/UserContext';
+import * as Contacts from 'expo-contacts'
 
 export default function Login() {
 
@@ -29,7 +30,6 @@ export default function Login() {
 
   const { user, setUser } = useUser(); 
 
-  
 
   const renderOnboardingScreen = () => {
     switch (onboardingStep) {
@@ -71,7 +71,7 @@ export default function Login() {
               title="👋 What's your full name?"
               value={fullName}
               onChangeText={setFirstName}
-              placeholder="Seth Rogan..."
+              placeholder="Seth Rogen..."
             />
             <View style={{ padding: 20, paddingBottom: insets.bottom }}>
               <PrimaryButton
